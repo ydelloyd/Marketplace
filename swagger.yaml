@@ -1,0 +1,305 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Job Bidding API
+  description: An API to create, view, and bid on job postings.
+servers:
+  - url: http://localhost:3001
+
+paths:
+  /api/jobs:
+    post:
+      summary: Create a new job posting
+      description: This endpoint allows users to create a new job posting by providing job details, including title, description, requirements, and expiration date.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - owner
+                - expiration
+              properties:
+                title:
+                  type: string
+                  description: The title of the job posting.
+                  example: "Graphic Designer Needed"
+                  minLength: 5
+                  maxLength: 100
+                  pattern: "^[A-Za-z0-9 ]+$" # Only letters, numbers, and spaces allowed.
+                description:
+                  type: string
+                  description: A detailed description of the job.
+                  example: "We need a skilled designer to create a logo."
+                requirements:
+                  type: string
+                  description: Specific skills or qualifications required for the job.
+                  example: "Proficient in Adobe Photoshop and Illustrator"
+                owner:
+                  type: object
+                  required:
+                    - name
+                    - contactInfo
+                  description: Information about the job poster.
+                  properties:
+                    name:
+                      type: string
+                      description: The name of the user posting the job.
+                      example: "John Doe"
+                      minLength: 2
+                      maxLength: 50
+                      pattern: "^[A-Za-z ]+$" # Only letters and spaces allowed.
+                    contactInfo:
+                      type: string
+                      description: Contact information for the poster (e.g., email).
+                      example: "john.doe@example.com"
+                expiration:
+                  type: string
+                  format: date-time
+                  description: The date and time when the job bidding will expire.
+                  example: "2024-10-03T19:14:00Z"
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    
+    get:
+      summary: Get all job postings (with optional filters)
+      description: Retrieve all job postings, optionally filtering by recently posted jobs or most active (jobs with the highest number of bids).
+      parameters:
+        - in: query
+          name: recent
+          schema:
+            type: boolean
+          description: If true, return only job postings that have been recently created.
+        - in: query
+          name: most_active
+          schema:
+            type: boolean
+          description: If true, return job postings with the highest number of bids.
+        - in: query
+          name: live_jobs
+          schema:
+            type: boolean
+          description: If true, return only jobs that are still open.
+        - in: query
+          name: job_count
+          schema:
+            type: integer
+          description: Numeric count of number of jobs to be returned - default 5.
+      responses:
+        '200':
+          description: A list of job postings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+
+  /api/jobs/{id}:
+    get:
+      summary: Get details of a specific job posting
+      description: Fetch detailed information for a specific job by its ID. The response includes job description, requirements, contact info, lowest bid, number of bids, and auction expiration time.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the job.
+      responses:
+        '200':
+          description: Job details including description, requirements, poster’s name, contact info, and auction information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetails'
+        '404': 
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+
+  /api/jobs/{id}/bids:
+    post:
+      summary: Place a new bid on a specific job
+      description: Submit a new bid for a specific job posting. The bid amount must be lower than the current lowest bid to be accepted.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the job.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  description: The amount of the bid being placed - in US Dollars.
+                  minimum: 0.01
+                  example: 150.00
+                contactInfo:
+                  type: string
+                  description: Contact information for the bidder (e.g., email).
+                  example: "john.doe@example.com"
+
+      responses:
+        '201':
+          description: Bid placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+
+components:
+  schemas:
+    Job:
+      type: object
+      description: A summary of a job posting.
+      required:
+        - id
+        - title
+        - description
+        - owner
+        - expiration
+        - lowestBid
+        - numberOfBids
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the job posting.
+          example: "job1234"
+        title:
+          type: string
+          description: The title of the job posting.
+          example: "Graphic Designer Needed"
+        description:
+          type: string
+          description: A detailed description of the job.
+          example: "We need a skilled designer to create a logo."
+        owner:
+          type: object
+          description: Information about the person posting the job.
+          properties:
+            name:
+              type: string
+              description: The name of the job poster.
+              example: "John Doe"
+            contactInfo:
+              type: string
+              description: Contact information for the job poster (e.g., email or phone number).
+              example: "john.doe@example.com"
+        expiration:
+          type: string
+          format: date-time
+          description: The date and time when the job bidding will close.
+          example: "2023-12-31T23:59:59Z"
+        lowestBid:
+          type: number
+          format: float
+          description: The current lowest bid for the job.
+          example: 100.00
+        numberOfBids:
+          type: integer
+          description: The total number of bids placed on the job.
+          example: 5
+
+    JobDetails:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            requirements:
+              type: string
+              description: The specific skills or qualifications required to complete the job.
+              example: "Proficient in Adobe Photoshop and Illustrator"
+              
+    Bid:
+      type: object
+      description: A bid placed on a job posting.
+      required:
+        - id
+        - amount
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the bid.
+          example: "bid5678"
+        amount:
+          type: number
+          format: float
+          description: The amount of the bid.
+          example: 150.00
+        timestamp:
+          type: string
+          format: date-time
+          description: The date and time when the bid was placed.
+          example: "2023-12-01T14:30:00Z"
+
+    GenericError:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: "Reason why the request failed."
