@@ -1,60 +1,67 @@
 import { Request, Response } from 'express';
 import { User } from '../models/userModel';
-import db from '../utils/db';
+import { UserService } from '../services/userService';
 
 export class UserController {
     // Get all users
     public static getUsers(req: Request, res: Response): void {
-        db.all('SELECT * FROM users', (err: Error, rows: any[]) => {
+          UserService.getAllUsers((err: Error | null, users?: User[]) => {
             if (err) {
               res.status(500).json({ error: err.message });
               return;
             }
-            res.json({ data: rows });
-          });
+            if (!users) {
+              res.status(404).json({ error: 'No users found' });
+              return;
+            }
+            res.json({ data: users });
+        });
     }
 
     // Get a user by id
     public static getUserById(req: Request, res: Response): void {
-        const { id } = req.params;
-        db.get('SELECT * FROM users WHERE id = ?', [id], (err: Error, row: any) => {
+        UserService.getUserById(req.params.id, (err: Error | null, user?: User) => {
           if (err) {
             res.status(500).json({ error: err.message });
             return;
           }
-          if (row === undefined) {
+          if (!user) {
             res.status(404).json({ error: 'User not found' });
             return;
           }
-          res.json({ data: row });
+          res.json({ data: user });
         });
     }
 
     // Create a new user
     public static createUser(req: Request, res: Response): void {
-        const user: User = req.body;
-        if (user.id === undefined || user.name === undefined) {
-          res.status(400).json({ error: 'Please provide an id and name' });
+      const user: User = req.body;
+      if (user.id === undefined || user.name === undefined) {
+        res.status(400).json({ error: 'Please provide an id and name' });
+        return;
+      }
+      UserService.createUser(user, (err: Error | null, changes?: number) => {
+        if (err) {
+          res.status(500).json({ error: err.message });
           return;
         }
-        db.run('INSERT INTO users (id, name) VALUES (?, ?)', [user.id, user.name], (err: Error | null) => {
-          if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-          }
-          res.status(201).json({ message: 'User added' });
-        });
+        if(changes === 0) {
+          res.status(400).json({ error: 'User already exists' });
+          return;
+        }
+        res.status(201).json({ message: 'User added'});
+      });
     }
 
     // Delete a user
     public static deleteUser(req: Request, res: Response): void {
         const { id } = req.params;
-        db.run('DELETE FROM users WHERE id = ?', [id], function(this: any, err: Error | null) {
+        UserService.deleteUser(id, (err: Error | null, changes?: number) => {
           if (err) {
             res.status(500).json({ error: err.message });
             return;
           }
-          if (this.changes === 0) {
+          if (changes === 0) {
             res.status(404).json({ error: 'User not found' });
             return;
           }
