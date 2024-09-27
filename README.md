@@ -1,6 +1,6 @@
-# Intuit Mailchimp Fullstack Take Home Assessment - Job Marketplace
+# Job Marketplace
 
-Welcome to the Intuit Mailchimp Fullstack Take Home Assessment! This project is a simplified job marketplace where users can post contract jobs and place bids on them. The focus is on core functionalities, allowing you to demonstrate your abilities in both frontend and backend development.
+This project is a simplified job marketplace where users can post contract jobs and place bids on them.
 
 ---
 
@@ -24,14 +24,6 @@ The setup here is for your convenience. If you'd like to reach for different tec
 1. Run `docker-compose up -d`
 1. Visit the frontend at `http://localhost:8080/`
 1. Visit the backend at `http://localhost:3001/`. `http://localhost:3001/users` demonstrates a working return of data.
-
----
-
-## Guidelines
-
-- **Time Commitment**: We ask that you spend up-to 3-4 hours on this assignment.
-- **GitHub Repository**: Provide a link to a GitHub repository containing the project code. Make frequent commits with clear messages to show your thought process and progress.
-- **Main Document**: Further detailed guidelines and requirements can be found [here](https://docs.google.com/document/d/1ofKBO4I7dUrUhfRQjNHHCAeJb2zIy-2lo7_YvA8DJfo).
 
 ---
 
