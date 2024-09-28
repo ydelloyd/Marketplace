@@ -1,4 +1,4 @@
-export interface Owner {
+export interface OwnerModel {
     name: string;
     contactInfo: string;
 }

@@ -1,8 +1,8 @@
 import { Job } from './jobModel';
-import { Owner } from './OwnerModel';
+import { OwnerModel } from './ownerModel';
 
 describe('Job Model', () => {
-    let owner: Owner;
+    let owner: OwnerModel;
     let job: Job;
 
     beforeEach(() => {
@@ -19,7 +19,8 @@ describe('Job Model', () => {
             expiration: new Date().toISOString(),
             lowestBid: 100,
             numberOfBids: 0,
-            requirements: 'Test requirements'
+            createdAt: new Date().toISOString()
+
         };
     });
 

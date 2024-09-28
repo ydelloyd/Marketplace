@@ -1,8 +1,8 @@
-import { Owner } from './OwnerModel';
+import { OwnerModel } from './ownerModel';
 
 describe('OwnerModel', () => {
     it('should create an Owner object with name and contactInfo', () => {
-        const owner: Owner = {
+        const owner: OwnerModel = {
             name: 'John Doe',
             contactInfo: 'john.doe@example.com'
         };
