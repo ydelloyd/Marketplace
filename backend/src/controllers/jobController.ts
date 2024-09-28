@@ -7,7 +7,7 @@ import { GenericError } from '../models/errorModel';
 export class JobController {
     // Get all jobs
     public static getJobs(req: Request, res: Response): void {
-        console.log('getJobs');
+
         const { recent, most_active, live_jobs, job_count } = req.query;
 
         // basic sanititation of query params
