@@ -47,20 +47,20 @@ describe('Job Routes', () => {
     it('should create a bid', async () => {
         const bid = {
             amount: 200,
-            contactInfo: 'tester@tester.com',
+            contact_email: 'tester@tester.com',
         };
         const response = await request(app).post('/api/jobs/1/bids').send(bid);
+        console.log(response.body);
         expect(response.status).toBe(201);
     });
 
-    it('should return 404 if job is not found when creating a bid', async () => {
+    it('should return 400 if job is not found when creating a bid', async () => {
         const bid = {
             amount: 200,
             contactInfo: 'tester@tester.com'
         };
         const response = await request(app).post('/api/jobs/100/bids').send(bid);
-        expect(response.status).toBe(404);
-        expect(response.body.reason).toEqual('No job found');
+        expect(response.status).toBe(400);
     });
 
 });

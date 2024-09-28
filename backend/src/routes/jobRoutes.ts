@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { JobController } from "../controllers/jobController";
+import { validateJob } from "../middleware/jobValidator";
+import { validateBidRequest } from "../middleware/bidValidator";
 
 const router = Router();
 
-// Get all Jobs
 router.get("/", JobController.getJobs);
 
 router.get("/:id", JobController.getJobById);
 
-router.post("/", JobController.createJob);
+router.post("/", validateJob, JobController.createJob);
 
-router.post("/:id/bids", JobController.createBid);
+router.post("/:id/bids", validateBidRequest, JobController.createBid);
 
 export default router;

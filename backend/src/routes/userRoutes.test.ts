@@ -32,4 +32,17 @@ describe('User Routes', () => {
         expect(response.status).toBe(200);
     });
 
+    it('should return 404 if user is not found', async () => {
+        const userId = '100';
+        const response = await request(app).get(`/users/${userId}`);
+        expect(response.status).toBe(404);
+    });
+
+    it('should return 400 if user id is missing', async () => {
+        const newUser = { name: 'John Doe'};
+        const response = await request(app).post('/users').send(newUser);
+        expect(response.status).toBe(400);
+    });
+
+
 });
