@@ -7,6 +7,7 @@ describe('Bid Model', () => {
         bid = {
             id: '123',
             amount: 100,
+            contact_email: 'test@test.com',
             timestamp: new Date().toISOString()
         };
     });

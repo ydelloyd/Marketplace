@@ -26,6 +26,7 @@ describe('mapToJob', () => {
             expiration: '2023-12-31T23:59:59Z',
             lowestBid: 0,
             numberOfBids: 0,
+            reqirements: "",
             createdAt: '2023-01-01T00:00:00Z'
         };
 

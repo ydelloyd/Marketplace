@@ -8,5 +8,6 @@ export interface Job {
     expiration: string; // ISO 8601 date-time string
     lowestBid: number;
     numberOfBids: number;
+    reqirements?: string;
     createdAt: string; // ISO 8601 date-time string
 }

@@ -3,6 +3,7 @@ import { Job } from "../models/jobModel";
 import { JobService } from "../services/jobService";
 import { JobQueryParams } from "../models/jobQueryParams";
 import { GenericError } from "../models/errorModel";
+import { Bid } from "../models/bidModel"; // Add this line to import Bid
 
 export class JobController {
     // Get all jobs
@@ -66,6 +67,25 @@ export class JobController {
                 res.status(500).json(genericError);
             }
             res.status(201).json(job);
+        });
+    }
+
+    // Create a bid
+    public static createBid(req: Request, res: Response): void {
+        const job_id = req.params?.id?.toString();
+        const bid: Bid = req.body;
+
+        JobService.createBid(job_id, bid, (err: Error | null, bid?: Bid) => {
+            const genericError: GenericError = { reason: "" };
+            if (err) {
+                genericError.reason = err.message;
+                res.status(500).json(genericError);
+            }
+            if (!bid) {
+                genericError.reason = "No job found";
+                res.status(404).json(genericError);
+            }
+            res.status(201).json(bid);
         });
     }
 }

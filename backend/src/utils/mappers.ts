@@ -12,6 +12,7 @@ export const mapToJob = (row: any): Job => {
             contactInfo: row.contact_email,
         } as OwnerModel,
         expiration: row.expiration_time,
+        reqirements: row.requirements ? row.requirements : '', // Set reqirements to empty string if it is null
         lowestBid: row.lowest_bid ? row.lowest_bid : 0, // Set lowestBid to 0 if it is null
         numberOfBids: row.bid_count, 
         createdAt: row.created_at,

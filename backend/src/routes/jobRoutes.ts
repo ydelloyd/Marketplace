@@ -10,4 +10,6 @@ router.get("/:id", JobController.getJobById);
 
 router.post("/", JobController.createJob);
 
+router.post("/:id/bids", JobController.createBid);
+
 export default router;

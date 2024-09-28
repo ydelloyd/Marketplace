@@ -2,6 +2,7 @@ import { Job } from "../models/jobModel";
 import db from "../utils/db";
 import { JobQueryParams } from "../models/jobQueryParams";
 import { mapToJob } from "../utils/mappers";
+import { Bid } from "../models/bidModel";
 
 export class JobService {
     public static getAllJobs(
@@ -62,13 +63,14 @@ export class JobService {
         callback: (err: Error | null, job?: Job) => void
     ): void {
         db.run(
-            `INSERT INTO jobs (name, description, owner_name, contact_email, expiration_time, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO jobs (name, description, owner_name, contact_email, requirements, expiration_time, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [
                 job.title,
                 job.description,
                 job.owner.name,
                 job.owner.contactInfo,
+                job.reqirements ? job.reqirements : "",
                 job.expiration,
                 new Date().toISOString(),
             ],
@@ -80,5 +82,33 @@ export class JobService {
                 }
             }
         );
+    }
+
+    public static createBid(
+        jobId: string,
+        bid: Bid,
+        callback: (err: Error | null, bid?: Bid) => void
+    ): void {
+
+        this.getJobById(jobId, (err, job) => {
+            if (err) {
+                callback(err);
+            } else if (!job) {
+                callback(null, undefined);
+            } else {
+                db.run(
+                    `INSERT INTO bids (job_id, amount, contact_email, timestamp) VALUES (?, ?, ?, ?)`,
+                    [jobId, bid.amount, bid.contact_email, new Date().toISOString()],
+                    function (this: { lastID: number }, err: Error) {
+                        if (err) {
+                            callback(new Error(`Error creating bid: ${err.message}`));
+                        } else {
+                            callback(null, { ...bid, id: this.lastID.toString() });
+                        }
+                    }
+                );
+            }
+        });
+        
     }
 }

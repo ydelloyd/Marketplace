@@ -10,7 +10,7 @@ paths:
   /api/jobs:
     post:
       summary: Create a new job posting
-      description: This endpoint allows users to create a new job posting by providing job details, including title, description, requirements, and expiration date.
+      description: This endpoint allows users to create a new job posting by providing job details, including title, description, and expiration date.
       requestBody:
         required: true
         content:
@@ -33,10 +33,6 @@ paths:
                   type: string
                   description: A detailed description of the job.
                   example: "We need a skilled designer to create a logo."
-                requirements:
-                  type: string
-                  description: Specific skills or qualifications required for the job.
-                  example: "Proficient in Adobe Photoshop and Illustrator"
                 owner:
                   type: object
                   required:
@@ -132,7 +128,7 @@ paths:
   /api/jobs/{id}:
     get:
       summary: Get details of a specific job posting
-      description: Fetch detailed information for a specific job by its ID. The response includes job description, requirements, contact info, lowest bid, number of bids, and auction expiration time.
+      description: Fetch detailed information for a specific job by its ID. The response includes job description, contact info, lowest bid, number of bids, and auction expiration time.
       parameters:
         - in: path
           name: id
@@ -142,7 +138,7 @@ paths:
           description: The unique identifier of the job.
       responses:
         '200':
-          description: Job details including description, requirements, poster’s name, contact info, and auction information.
+          description: Job details including description, poster’s name, contact info, and auction information.
           content:
             application/json:
               schema:
@@ -233,6 +229,10 @@ components:
           type: string
           description: The title of the job posting.
           example: "Graphic Designer Needed"
+        requirements:
+          type: string
+          description: The requirements for the job.
+          example: "Must have experience in Adobe Illustrator."
         description:
           type: string
           description: A detailed description of the job.
@@ -267,20 +267,13 @@ components:
     JobDetails:
       allOf:
         - $ref: '#/components/schemas/Job'
-        - type: object
-          properties:
-            requirements:
-              type: string
-              description: The specific skills or qualifications required to complete the job.
-              example: "Proficient in Adobe Photoshop and Illustrator"
-              
+        
     Bid:
       type: object
       description: A bid placed on a job posting.
       required:
         - id
         - amount
-        - timestamp
       properties:
         id:
           type: string
@@ -291,6 +284,10 @@ components:
           format: float
           description: The amount of the bid.
           example: 150.00
+        contactInfo:
+          type: string
+          description: Contact information for the bidder (e.g., email).
+          example: "test@test.com"
         timestamp:
           type: string
           format: date-time
