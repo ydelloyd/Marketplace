@@ -1,5 +1,7 @@
 {
   "devDependencies": {
     "ts-jest": "^29.2.5"
+  },
+  "dependencies": {
   }
 }
