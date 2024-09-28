@@ -1,8 +1,7 @@
-import { OwnerModel } from './ownerModel';
-
+import { OwnerModel } from "./ownerModel";
 
 export interface Job {
-    id: string;
+    id?: string;
     title: string;
     description: string;
     owner: OwnerModel;

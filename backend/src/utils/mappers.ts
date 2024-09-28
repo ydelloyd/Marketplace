@@ -10,11 +10,11 @@ export const mapToJob = (row: any): Job => {
         owner: {
             name: row.owner_name,
             contactInfo: row.contact_email,
-        } as OwnerModel, // Use object literal instead
-        expiration: row.expiration_time, // Keep the expiration time as is
-        lowestBid: 0, // Set a default value for lowestBid -- will be updated once join with bids table is implemented
-        numberOfBids: 0, // Set a default value for numberOfBids -- will be updated once join with bids table is implemented
-        createdAt: row.created_at, // Keep the created_at time as is
+        } as OwnerModel,
+        expiration: row.expiration_time,
+        lowestBid: row.lowest_bid ? row.lowest_bid : 0, // Set lowestBid to 0 if it is null
+        numberOfBids: row.bid_count, 
+        createdAt: row.created_at,
     };
     
 }

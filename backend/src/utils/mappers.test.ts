@@ -10,7 +10,9 @@ describe('mapToJob', () => {
             owner_name: 'John Doe',
             contact_email: 'john.doe@example.com',
             expiration_time: '2023-12-31T23:59:59Z',
-            created_at: '2023-01-01T00:00:00Z'
+            created_at: '2023-01-01T00:00:00Z',
+            lowest_bid: null,
+            bid_count: 0
         };
 
         const expectedJob: Job = {
