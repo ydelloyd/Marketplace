@@ -1,86 +1,67 @@
 import React, { useEffect, useState } from "react";
 import { Grid2, Typography, Card, Button } from "@mui/material";
 import { Job } from "../models/jobModel";
-import { OwnerModel } from "../models/ownerModel";
 import JobsList from "./shared/jobsList";
 import JobModal from "./shared/jobModal";
 import PostAddIcon from "@mui/icons-material/PostAdd";
+import JobService from "../services/jobService";
+import { useAlert } from "../contexts/alertContext";
+import { useLoader } from "../contexts/loaderContext";
 
 const HomePage: React.FC = () => {
+  const { setOpen, setMessage, setSeverity } = useAlert();
+  const { setLoading } = useLoader();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const [recentJobs, setRecentJobs] = useState<Job[]>([]);
+  const [mostActive, setMostActive] = useState<Job[]>([]);
 
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
 
-  const jobs: Job[] = [
-    {
-      id: "1",
-      title: "First Job",
-      description: "first job description",
-      owner: { name: "TEST", contactInfo: "test@test.com" } as OwnerModel,
-      expiration: new Date().toISOString(), // ISO 8601 date-time string
-      lowestBid: 1,
-      numberOfBids: 5,
-      reqirements: "skills",
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "2",
-      title: "Second ",
-      description: "second job ",
-      owner: { name: "TEST", contactInfo: "test@test.com" } as OwnerModel,
-      expiration: new Date().toISOString(), // ISO 8601 date-time string
-      lowestBid: 1,
-      numberOfBids: 5,
-      reqirements: "skills",
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "3",
-      title: "third no description",
-      description: "third job description",
-      owner: { name: "TEST", contactInfo: "test@test.com" } as OwnerModel,
-      expiration: new Date().toISOString(), // ISO 8601 date-time string
-      lowestBid: 1,
-      numberOfBids: 5,
-      createdAt: new Date().toISOString()
-    }
-  ];
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
 
-  const mostActive: Job[] = [
-    {
-      id: "1",
-      title: "First Job",
-      description: "first job description",
-      owner: { name: "TEST", contactInfo: "test@test.com" } as OwnerModel,
-      expiration: new Date().toISOString(), // ISO 8601 date-time string
-      lowestBid: 1,
-      numberOfBids: 5,
-      reqirements: "skills",
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "2",
-      title: "Second ",
-      description: "second job ",
-      owner: { name: "TEST", contactInfo: "test@test.com" } as OwnerModel,
-      expiration: new Date().toISOString(), // ISO 8601 date-time string
-      lowestBid: 1,
-      numberOfBids: 5,
-      reqirements: "skills",
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "3",
-      title: "third no description",
-      description: "third job description",
-      owner: { name: "TEST", contactInfo: "test@test.com" } as OwnerModel,
-      expiration: new Date().toISOString(), // ISO 8601 date-time string
-      lowestBid: 1,
-      numberOfBids: 5,
-      createdAt: new Date().toISOString()
-    }
-  ];
+      const triggerFailedAlert = (message: string) => {
+        setSeverity("error");
+        setMessage(message);
+        setOpen(true);
+      };
+
+      try {
+        const recentJobsData = await JobService.getAllJobs(
+          true,
+          false,
+          true,
+          5
+        );
+        if (recentJobsData.status !== 200) {
+          triggerFailedAlert("Failed to fetch recent jobs");
+        } else {
+          setRecentJobs(recentJobsData.data);
+        }
+
+        const mostActiveJobsData = await JobService.getAllJobs(
+          false,
+          true,
+          true,
+          5
+        );
+        if (mostActiveJobsData.status !== 200) {
+          triggerFailedAlert("Failed to fetch active jobs");
+        } else {
+          setMostActive(mostActiveJobsData.data);
+        }
+      } catch (error) {
+        triggerFailedAlert("Failed to fetch jobs: " + error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, [setLoading, setSeverity, setMessage, setOpen]);
 
   return (
     <>
@@ -90,8 +71,7 @@ const HomePage: React.FC = () => {
             Welcome to the Best Marketplace
           </Typography>
         </Grid2>
-        <Grid2 size={2} justifyContent="flex-end" 
-    alignItems="center" container>
+        <Grid2 size={2} justifyContent="flex-end" alignItems="center" container>
           <Button
             variant="contained"
             endIcon={<PostAddIcon />}
@@ -102,7 +82,7 @@ const HomePage: React.FC = () => {
         </Grid2>
         <Grid2 size={6}>
           <Card>
-            <JobsList jobs={jobs} title="Recently Added Jobs" />
+            <JobsList jobs={recentJobs} title="Recently Added Jobs" />
           </Card>
         </Grid2>
         <Grid2 size={6}>
