@@ -21,9 +21,10 @@ The setup here is for your convenience. If you'd like to reach for different tec
 ### Running the build
 
 1. Navigate to the root directory.
-1. Run `docker-compose up -d`
-1. Visit the frontend at `http://localhost:8080/`
-1. Visit the backend at `http://localhost:3001/`. `http://localhost:3001/users` demonstrates a working return of data.
+2. Run `docker-compose up -d`
+3. Visit the frontend at `http://localhost:8080/`
+4. Visit the backend at `http://localhost:3001/`. `http://localhost:3001/api/jobs` demonstrates a working return of some prestored jobs.
+5. A Swagger documented has been included for your convience at `http://localhost:0214/`
 
 ---
 
@@ -80,11 +81,3 @@ Create a user-friendly interface using React (managed by NX):
 - **Automated Testing**: Basic unit tests for both frontend and backend.
 
 ---
-
-## Evaluation Criteria
-
-Your submission will be evaluated based on several factors including code quality, functionality, design, testing, and documentation. For more details, refer to the main document.
-
-## Good Luck!
-
-We look forward to seeing your implementation and creativity in tackling this assessment. Remember to prioritize quality and showcase your expertise effectively.

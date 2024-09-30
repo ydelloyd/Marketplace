@@ -5,6 +5,7 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "3001:3001"
+
   frontend:
     build:
       context: ./frontend
@@ -13,3 +14,12 @@ services:
       - "3000:3000"
       - "8080:8080"
       - "4200:4200"
+      
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "2140:8080"  # Map host port 2140 to container port 8080
+    environment:
+      - SWAGGER_JSON=/swagger/swagger.yaml  # Use the path within the container
+    volumes:
+      - ./swagger-host:/swagger  # Mount the entire directory to access files inside

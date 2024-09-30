@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: Job Bidding API
+  title: MarketPlace API
   description: An API to create, view, and bid on job postings.
 servers:
   - url: http://localhost:3001
@@ -188,7 +188,7 @@ paths:
                   description: The amount of the bid being placed - in US Dollars.
                   minimum: 0.00
                   example: 150.00
-                contactInfo:
+                contact_email:
                   type: string
                   description: Contact information for the bidder (e.g., email).
                   example: "john.doe@example.com"
