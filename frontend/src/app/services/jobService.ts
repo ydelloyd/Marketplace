@@ -26,8 +26,8 @@ const jobService = {
       live_jobs: liveJobs,
       job_count: jobCount,
     };
-    const response = await apiClient.get<Job[]>('/api/jobs', { params });
-    return response;
+    const response = await apiClient.get<{jobs: Job[]}>('/api/jobs', { params });
+    return {...response, data: response.data.jobs};
   },
 
   // Get details of a specific job posting

@@ -10,7 +10,7 @@ const JobsList: React.FC<{ jobs: Job[], title: string }> = ({ jobs, title }) => 
                 <ListItemText primary={<span style={{ fontSize: '1.5em', fontWeight: 'bold' }}>{title}</span>} />
             </ListItem>
             <Divider />
-            {jobs.map((job, index) => (
+            {jobs.length > 0 && jobs.map((job, index) => (
                 <>
                     <ListItemButton onClick={() => window.location.href = `/job/${job.id}`}>
                         <ListItemText primary={job.title} secondary={job.description} />

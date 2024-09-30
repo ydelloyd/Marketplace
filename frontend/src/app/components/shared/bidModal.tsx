@@ -7,6 +7,10 @@ import {
   FormHelperText,
   Modal
 } from "@mui/material";
+import jobService from "../../services/jobService";
+import { Bid } from "src/app/models/bidModel";
+import { useAlert } from "../../contexts/alertContext";
+import { useLoader } from "../../contexts/loaderContext";
 
 const style = {
   position: "absolute",
@@ -27,20 +31,47 @@ const BidModal: React.FC<{
 }> = ({ id, open, handleClose }) => {
   const [amount, setAmount] = useState<number>(0);
   const [amountError, setAmountError] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
   const [contactEmail, setContactEmail] = useState<string>("");
+  const { setOpen, setMessage, setSeverity } = useAlert();
+  const { setLoading } = useLoader();
 
-  const handleSubmit = () => {
+  const triggerAlert = (severity: "success" | "info" | "warning" | "error", message: string) => {
+    setSeverity(severity);
+    setMessage(message);
+    setOpen(true);
+  };
+
+  const handleSubmit = async () => {
     const error = validateAmount(amount);
-    if (error) {
+    const emailError = validateEmail(contactEmail);
+    if (error || emailError) {
       setAmountError(error);
+      setEmailError(emailError);
       return;
     }
     // Handle form submission logic here
-
+    setLoading(true);
+    await jobService.placeBid(id, { amount, contact_email: contactEmail } as Bid)
+      .then(response => {
+        if(response.status === 201) {
+          triggerAlert("success", "Bid placed successfully");
+        } else {
+          triggerAlert("error", "Failed to place bid. Please try again.");
+          return;
+        }
+      })
+      .catch(error => {
+        console.error("Error placing bid:", error);
+        triggerAlert("error", "Failed to place bid. Please try again.");
+        setAmountError("Failed to place bid.");
+      });
+    setLoading(false);
     // Optionally clear the fields after submission
     setAmount(0);
     setContactEmail("");
     setAmountError(""); // Clear any previous errors
+    setEmailError("");
     handleClose(); // Close the modal after submission
   };
 
@@ -57,6 +88,12 @@ const BidModal: React.FC<{
     }
     return "";
   };
+
+  const validateEmail = (email: string) => {
+    if(email.trim() === "") {
+      return "Email is required";
+    } return "";
+  }
 
   return (
     <Modal
@@ -90,7 +127,12 @@ const BidModal: React.FC<{
           fullWidth
           margin="normal"
           value={contactEmail}
-          onChange={(e) => setContactEmail(e.target.value)}
+          onChange={(e) => {
+            setContactEmail(e.target.value);
+            setEmailError("");
+          }
+          }
+          error={!!emailError}
         />
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           Submit

@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
     };
 
     fetchJobs();
-  }, [setLoading, setSeverity, setMessage, setOpen]);
+  }, [setLoading, setSeverity, setMessage, setOpen, modalOpen]);
 
   return (
     <>

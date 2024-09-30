@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid2,
   Typography,
@@ -18,26 +18,51 @@ import { useParams } from "react-router-dom";
 import AlarmAddIcon from "@mui/icons-material/AlarmAdd";
 import { Job } from "../models/jobModel";
 import BidModal from "./shared/bidModal";
+import { useAlert } from "../contexts/alertContext";
+import { useLoader } from "../contexts/loaderContext";
+import JobService from "../services/jobService";
 
 const JobCard: React.FC = () => {
+  const { setOpen, setMessage, setSeverity } = useAlert();
+  const { setLoading } = useLoader();
   const { id } = useParams();
-
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [ job, setJob ] = useState<Job | null>(null);
+  
 
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
 
-  const job: Job = {
-    id: "-1",
-    title: "",
-    description: "",
-    owner: { name: "", contactInfo: "" },
-    expiration: "",
-    lowestBid: 0,
-    numberOfBids: 0,
-    reqirements: "",
-    createdAt: ""
-  };
+  useEffect(() => {
+    if(id === undefined || isNaN(parseInt(id))) {
+      return;
+    } 
+
+    const fetchJob = async () => {
+      setLoading(true);
+
+      const triggerFailedAlert = (message: string) => {
+        setSeverity("error");
+        setMessage(message);
+        setOpen(true);
+      };
+
+      try {
+        const jobData = await JobService.getJobDetails(id);
+        if (jobData.status !== 200) {
+          triggerFailedAlert("Failed to fetch job");
+        } else {
+          setJob(jobData.data);
+        }
+      } catch (error) {
+        triggerFailedAlert("Failed to fetch job: " + error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [setLoading, setSeverity, setMessage, setOpen, id, modalOpen]);
 
   const copyEmailToClipboard = (contact: string) => {
     navigator.clipboard.writeText(contact);
@@ -48,22 +73,7 @@ const JobCard: React.FC = () => {
     return convertedDate !== "Invalid Date" ? convertedDate : "";
   };
 
-  return id === undefined || id === "-1" ? (
-    <Box paddingTop={"1rem"} display="flex" justifyContent="center" alignItems="center">
-  <Card>
-    <CardContent>
-      <Stack alignItems="center" justifyContent="center">
-        <AlarmAddIcon color={"error"} fontSize="large" />
-      </Stack>
-      <Stack alignItems="center">
-        <Typography variant="h4">
-          No Job Found
-        </Typography>
-      </Stack>
-    </CardContent>
-  </Card>
-</Box>
-  ) : (
+  return (job && job.id) ? (
     <Grid2 size={4} paddingTop={"1rem"}>
       <Card sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <CardContent>
@@ -103,7 +113,7 @@ const JobCard: React.FC = () => {
             Job Requirements:
           </Typography>
           <Typography sx={{ mb: 1.5, wordBreak: "break-word" }}>
-            {job.reqirements}
+            {job.requirements}
           </Typography>
           <Divider />
           <Grid2
@@ -145,7 +155,7 @@ const JobCard: React.FC = () => {
           >
             Job Created At:
           </Typography>
-          <Typography variant="body1">{utcToLocale(job.createdAt)}</Typography>
+          <Typography variant="body1">{job.createdAt ? utcToLocale(job.createdAt) : ""}</Typography>
           <Divider />
           <Box
             paddingTop={"1rem"}
@@ -169,8 +179,23 @@ const JobCard: React.FC = () => {
           </Box>
         </CardContent>
       </Card>
-      <BidModal id={id} open={modalOpen} handleClose={handleClose} />
+      <BidModal id={id ?? ""} open={modalOpen} handleClose={handleClose} />
     </Grid2>
+  ) : (
+    <Box paddingTop={"1rem"} display="flex" justifyContent="center" alignItems="center">
+  <Card>
+    <CardContent>
+      <Stack alignItems="center" justifyContent="center">
+        <AlarmAddIcon color={"error"} fontSize="large" />
+      </Stack>
+      <Stack alignItems="center">
+        <Typography variant="h4">
+          No Job Found
+        </Typography>
+      </Stack>
+    </CardContent>
+  </Card>
+</Box>
   );
 };
 

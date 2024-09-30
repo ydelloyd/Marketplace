@@ -14,16 +14,15 @@ export class JobService {
         if (params.live_jobs) {
             query = query.concat(" WHERE expiration_time > " + `'${new Date().toISOString()}'`);
         }
-        if (params.recent) {
-            query = query.concat(" ORDER BY created_at DESC");
-        }
-
         query = query.concat(") as jobs LEFT JOIN bids ON jobs.id = bids.job_id GROUP BY jobs.id");
         if (params.most_active) {
             // concat join with bids table and largest count of bids for each job
             query = query.concat(
                 " ORDER BY bid_count DESC"
             );
+        }
+        if (params.recent) {
+            query = query.concat(" ORDER BY created_at DESC");
         }
         if (params.job_count) {
             query = query.concat(" LIMIT " + params.job_count);
@@ -46,7 +45,7 @@ export class JobService {
         callback: (err: Error | null, job?: Job) => void
     ): void {
         db.get(
-            "SELECT * FROM jobs WHERE id = ?",
+            "SELECT jobs.*, COUNT(bids.id) AS bid_count, MIN(bids.amount) AS lowest_bid FROM jobs LEFT JOIN bids ON jobs.id = bids.job_id WHERE jobs.id = ? GROUP BY jobs.id;",
             [id],
             (err: Error | null, row: any) => {
                 if (err) {

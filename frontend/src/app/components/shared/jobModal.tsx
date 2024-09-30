@@ -8,6 +8,9 @@ import {
   Button
 } from "@mui/material";
 import { Job, jobSchema } from "../../models/jobModel";
+import { useAlert } from "../../contexts/alertContext";
+import { useLoader } from "../../contexts/loaderContext";
+import jobService from "../../services/jobService";
 
 // Initial Job Form State
 const initialJobState: Job = {
@@ -15,7 +18,7 @@ const initialJobState: Job = {
   description: "",
   owner: { name: "", contactInfo: "" },
   expiration: "",
-  reqirements: ""
+  requirements: ""
 };
 
 // Reducer function to handle form state
@@ -45,7 +48,15 @@ export const JobModal: React.FC<{ open: boolean; onClose: () => void }> = ({
   onClose
 }) => {
   const [state, dispatch] = useReducer(jobReducer, initialJobState);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({}); // Validation errors
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const { setOpen, setMessage, setSeverity } = useAlert();
+  const { setLoading } = useLoader();
+
+  const triggerAlert = (severity: string, message: string) => {
+    setSeverity("severity");
+    setMessage(message);
+    setOpen(true);
+  };
 
   // Validate a single field
   const validateField = (field: string, value: string | number | Date) => {
@@ -59,20 +70,32 @@ export const JobModal: React.FC<{ open: boolean; onClose: () => void }> = ({
   };
 
   // Handle form submit
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validationResult = jobSchema.validate(state, { abortEarly: false });
-    console.log(validationResult);
     if (validationResult.error) {
       const fieldErrors: { [key: string]: string } = {};
       validationResult.error.details.forEach((err) => {
         fieldErrors[err.context?.key || ""] = err.message;
       });
-      console.log(fieldErrors)
-      console.log(fieldErrors.title)
-      console.log(fieldErrors.name)
       setErrors(fieldErrors);
     } else {
-      console.log("Job submitted:", state);
+      setLoading(true);
+      await jobService.createJob(state)
+        .then(response => {
+          if(response.status === 201) {
+            triggerAlert("success", "Job created Sucessfully");
+          } else {
+            triggerAlert("error", "Failed to create Job. Please try again.");
+            return;
+          }
+        })
+        .catch(error => {
+          console.error("Error creating Job:", error);
+          triggerAlert("error", "Failed to create job. Please try again.");
+          setErrors({ title: "Failed to create job." });
+        });
+      setLoading(false);
+
 
       dispatch({ type: "RESET" });
       onClose();
@@ -121,16 +144,16 @@ export const JobModal: React.FC<{ open: boolean; onClose: () => void }> = ({
             label="Requirements"
             fullWidth
             margin="normal"
-            value={state.reqirements}
-            error={!!errors.reqirements}
-            helperText={errors.reqirements}
+            value={state.requirements}
+            error={!!errors.requirements}
+            helperText={errors.requirements}
             onChange={(e) => {
                 dispatch({
                     type: "SET_FIELD",
-                    field: "reqirements",
+                    field: "requirements",
                     value: e.target.value
                 });
-                validateField("reqirements", e.target.value);
+                validateField("requirements", e.target.value);
             }}
         />
         {/* Owner Name Input */}
