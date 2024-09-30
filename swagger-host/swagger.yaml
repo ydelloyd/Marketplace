@@ -185,8 +185,7 @@ paths:
                 amount:
                   type: number
                   format: float
-                  description: The amount of the bid being placed - in US Dollars.
-                  minimum: 0.00
+                  description: The amount of the bid being placed - in US Dollars. This value should be greater than 0.
                   example: 150.00
                 contact_email:
                   type: string

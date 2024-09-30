@@ -11,6 +11,7 @@ import jobService from "../../services/jobService";
 import { Bid } from "src/app/models/bidModel";
 import { useAlert } from "../../contexts/alertContext";
 import { useLoader } from "../../contexts/loaderContext";
+import Joi from "joi";
 
 const style = {
   position: "absolute",
@@ -36,33 +37,63 @@ const BidModal: React.FC<{
   const { setOpen, setMessage, setSeverity } = useAlert();
   const { setLoading } = useLoader();
 
-  const triggerAlert = (severity: "success" | "info" | "warning" | "error", message: string) => {
+  const triggerAlert = (
+    severity: "success" | "info" | "warning" | "error",
+    message: string
+  ) => {
     setSeverity(severity);
     setMessage(message);
     setOpen(true);
   };
 
+  const validate = () => {
+    const schema = Joi.object({
+      amount: Joi.number().positive().required().messages({
+        "number.base": "Amount must be a number",
+        "number.positive": "Amount must be a positive number",
+        "any.required": "Amount is required"
+      }),
+      contactEmail: Joi.string().email({ tlds: { allow: false } }).required().messages({
+        "string.email": "Invalid email address",
+        "any.required": "Email is required"
+      })
+    });
+
+    const { error } = schema.validate({ amount, contactEmail });
+    return error ? error.details : null;
+  };
+
   const handleSubmit = async () => {
-    const error = validateAmount(amount);
-    const emailError = validateEmail(contactEmail);
-    if (error || emailError) {
-      setAmountError(error);
-      setEmailError(emailError);
+    const validationErrors = validate();
+
+    if (validationErrors) {
+      // Clear previous errors
+      setAmountError("");
+      setEmailError("");
+
+      validationErrors.forEach((err) => {
+        if (err.context && err.context.key === "amount") {
+          setAmountError(err.message);
+        } else if (err.context && err.context.key === "contactEmail") {
+          setEmailError(err.message);
+        }
+      });
       return;
     }
+
     // Handle form submission logic here
     setLoading(true);
-    await jobService.placeBid(id, { amount, contact_email: contactEmail } as Bid)
-      .then(response => {
-        if(response.status === 201) {
+    await jobService
+      .placeBid(id, { amount, contact_email: contactEmail } as Bid)
+      .then((response) => {
+        if (response.status === 201) {
           triggerAlert("success", "Bid placed successfully");
         } else {
           triggerAlert("error", "Failed to place bid. Please try again.");
           return;
         }
       })
-      .catch(error => {
-        console.error("Error placing bid:", error);
+      .catch((error) => {
         triggerAlert("error", "Failed to place bid. Please try again.");
         setAmountError("Failed to place bid.");
       });
@@ -74,26 +105,6 @@ const BidModal: React.FC<{
     setEmailError("");
     handleClose(); // Close the modal after submission
   };
-
-  // JOI not required to validate 1 field, would migrate if more fields are added
-  const validateAmount = (value: number | string) => {
-    if (typeof value === "number" && value < 0) {
-      return "Amount must be a positive number";
-    }
-    if (typeof value === "string" && value.trim() !== "") {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue) || numValue < 0) {
-        return "Amount must be a positive number";
-      }
-    }
-    return "";
-  };
-
-  const validateEmail = (email: string) => {
-    if(email.trim() === "") {
-      return "Email is required";
-    } return "";
-  }
 
   return (
     <Modal
@@ -130,10 +141,10 @@ const BidModal: React.FC<{
           onChange={(e) => {
             setContactEmail(e.target.value);
             setEmailError("");
-          }
-          }
+          }}
           error={!!emailError}
         />
+        <FormHelperText error>{emailError}</FormHelperText>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           Submit
         </Button>

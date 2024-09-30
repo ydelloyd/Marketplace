@@ -52,8 +52,11 @@ export const JobModal: React.FC<{ open: boolean; onClose: () => void }> = ({
   const { setOpen, setMessage, setSeverity } = useAlert();
   const { setLoading } = useLoader();
 
-  const triggerAlert = (severity: string, message: string) => {
-    setSeverity("severity");
+  const triggerAlert = (
+    severity: "success" | "info" | "warning" | "error",
+    message: string
+  ) => {
+    setSeverity(severity);
     setMessage(message);
     setOpen(true);
   };
@@ -80,22 +83,21 @@ export const JobModal: React.FC<{ open: boolean; onClose: () => void }> = ({
       setErrors(fieldErrors);
     } else {
       setLoading(true);
-      await jobService.createJob(state)
-        .then(response => {
-          if(response.status === 201) {
+      await jobService
+        .createJob(state)
+        .then((response) => {
+          if (response.status === 201) {
             triggerAlert("success", "Job created Sucessfully");
           } else {
             triggerAlert("error", "Failed to create Job. Please try again.");
             return;
           }
         })
-        .catch(error => {
-          console.error("Error creating Job:", error);
+        .catch((error) => {
           triggerAlert("error", "Failed to create job. Please try again.");
           setErrors({ title: "Failed to create job." });
         });
       setLoading(false);
-
 
       dispatch({ type: "RESET" });
       onClose();
@@ -141,20 +143,20 @@ export const JobModal: React.FC<{ open: boolean; onClose: () => void }> = ({
         />
         {/* Requirements Input */}
         <TextField
-            label="Requirements"
-            fullWidth
-            margin="normal"
-            value={state.requirements}
-            error={!!errors.requirements}
-            helperText={errors.requirements}
-            onChange={(e) => {
-                dispatch({
-                    type: "SET_FIELD",
-                    field: "requirements",
-                    value: e.target.value
-                });
-                validateField("requirements", e.target.value);
-            }}
+          label="Requirements"
+          fullWidth
+          margin="normal"
+          value={state.requirements}
+          error={!!errors.requirements}
+          helperText={errors.requirements}
+          onChange={(e) => {
+            dispatch({
+              type: "SET_FIELD",
+              field: "requirements",
+              value: e.target.value
+            });
+            validateField("requirements", e.target.value);
+          }}
         />
         {/* Owner Name Input */}
         <TextField

@@ -10,5 +10,5 @@ export interface Bid {
 // Define the schema for the bid
 export const bidSchema = Joi.object({
     amount: Joi.number().required().positive(), // Amount should be a positive number
-    contact_email: Joi.string().email().required(), // Email must be valid and required
+    contact_email: Joi.string().email({ tlds: { allow: false } }).required(), // Email must be valid and required
 });
