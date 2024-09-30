@@ -9,7 +9,7 @@ export interface Job {
     expiration: string; // ISO 8601 date-time string
     lowestBid: number;
     numberOfBids: number;
-    reqirements?: string;
+    requirements?: string;
     createdAt: string; // ISO 8601 date-time string
 }
 
@@ -20,6 +20,6 @@ export const jobSchema = Joi.object({
         name: Joi.string().min(2).max(50).required().regex(/^[A-Za-z ]+$/),
         contactInfo: Joi.string().required(),
     }),
-    reqirements: Joi.string(),
+    requirements: Joi.string(),
     expiration: Joi.date().greater('now').required(),
 });

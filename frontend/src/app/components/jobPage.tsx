@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Grid2,
   Typography,
@@ -17,11 +17,15 @@ import CatchingPokemonIcon from "@mui/icons-material/CatchingPokemon";
 import { useParams } from "react-router-dom";
 import AlarmAddIcon from "@mui/icons-material/AlarmAdd";
 import { Job } from "../models/jobModel";
+import BidModal from "./shared/bidModal";
 
 const JobCard: React.FC = () => {
   const { id } = useParams();
 
-  console.log(id);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const handleOpen = () => setModalOpen(true);
+  const handleClose = () => setModalOpen(false);
 
   const job: Job = {
     id: "-1",
@@ -77,7 +81,7 @@ const JobCard: React.FC = () => {
               {job.title}
             </Typography>
             <Tooltip title={"Bid on this job!"}>
-              <IconButton color="secondary" aria-label="bid" size="large">
+              <IconButton color="secondary" aria-label="bid" size="large" onClick={handleOpen}>
                 <CatchingPokemonIcon />
               </IconButton>
             </Tooltip>
@@ -165,6 +169,7 @@ const JobCard: React.FC = () => {
           </Box>
         </CardContent>
       </Card>
+      <BidModal id={id} open={modalOpen} handleClose={handleClose} />
     </Grid2>
   );
 };

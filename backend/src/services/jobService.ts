@@ -70,7 +70,7 @@ export class JobService {
                 job.description,
                 job.owner.name,
                 job.owner.contactInfo,
-                job.reqirements ? job.reqirements : "",
+                job.requirements ? job.requirements : "",
                 job.expiration,
                 new Date().toISOString(),
             ],
