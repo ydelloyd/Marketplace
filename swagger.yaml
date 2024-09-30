@@ -21,6 +21,8 @@ paths:
                 - title
                 - owner
                 - expiration
+                - description
+                - requirements
               properties:
                 title:
                   type: string
@@ -56,6 +58,10 @@ paths:
                   format: date-time
                   description: The date and time when the job bidding will expire.
                   example: "2024-10-03T19:14:00Z"
+                requirements:
+                  type: string
+                  description: The requirements for the job.
+                  example: "Must have experience in Adobe Illustrator."
       responses:
         '201':
           description: Job created successfully

@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Stack,
-  Button,
   Divider,
   TextField,
   Chip,
@@ -15,24 +14,55 @@ import {
 } from "@mui/material";
 import ContactMail from "@mui/icons-material/ContactMail";
 import CatchingPokemonIcon from "@mui/icons-material/CatchingPokemon";
+import { useParams } from "react-router-dom";
+import AlarmAddIcon from "@mui/icons-material/AlarmAdd";
+import { Job } from "../models/jobModel";
 
-import { Job } from "../../models/jobModel";
+const JobCard: React.FC = () => {
+  const { id } = useParams();
 
-const JobCard: React.FC<{ job: Job }> = ({ job }) => {
-    
+  console.log(id);
+
+  const job: Job = {
+    id: "-1",
+    title: "",
+    description: "",
+    owner: { name: "", contactInfo: "" },
+    expiration: "",
+    lowestBid: 0,
+    numberOfBids: 0,
+    reqirements: "",
+    createdAt: ""
+  };
+
   const copyEmailToClipboard = (contact: string) => {
     navigator.clipboard.writeText(contact);
   };
 
   const utcToLocale = (date: string) => {
-    const convertedDate = new Date(date).toLocaleString()
-    return convertedDate ? convertedDate : "";
+    const convertedDate = new Date(date).toLocaleString();
+    return convertedDate !== "Invalid Date" ? convertedDate : "";
   };
 
-  return (
-    <Grid2 size={4}>
-       <Card sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-       <CardContent>
+  return id === undefined || id === "-1" ? (
+    <Box paddingTop={"1rem"} display="flex" justifyContent="center" alignItems="center">
+  <Card>
+    <CardContent>
+      <Stack alignItems="center" justifyContent="center">
+        <AlarmAddIcon color={"error"} fontSize="large" />
+      </Stack>
+      <Stack alignItems="center">
+        <Typography variant="h4">
+          No Job Found
+        </Typography>
+      </Stack>
+    </CardContent>
+  </Card>
+</Box>
+  ) : (
+    <Grid2 size={4} paddingTop={"1rem"}>
+      <Card sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <CardContent>
           <Stack
             direction="row"
             sx={{ justifyContent: "space-between", alignItems: "center" }}
@@ -92,7 +122,6 @@ const JobCard: React.FC<{ job: Job }> = ({ job }) => {
               <TextField
                 id={"lowest-bid-" + job.id}
                 label="Current Lowest Bid"
-                type="number"
                 variant="standard"
                 disabled
                 value={"$" + job.lowestBid}
@@ -114,8 +143,16 @@ const JobCard: React.FC<{ job: Job }> = ({ job }) => {
           </Typography>
           <Typography variant="body1">{utcToLocale(job.createdAt)}</Typography>
           <Divider />
-          <Box paddingTop={"1rem"} display={"flex"} justifyContent={"flex-end"} alignItems={"center"}>
-          <Typography variant="body1" paddingRight={"1rem"}>{`Contact ${job.owner.name} at: `}</Typography>
+          <Box
+            paddingTop={"1rem"}
+            display={"flex"}
+            justifyContent={"flex-end"}
+            alignItems={"center"}
+          >
+            <Typography
+              variant="body1"
+              paddingRight={"1rem"}
+            >{`Contact ${job.owner.name} at: `}</Typography>
             <Tooltip title={job.owner.contactInfo}>
               <Chip
                 icon={<ContactMail />}

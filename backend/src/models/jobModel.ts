@@ -20,5 +20,6 @@ export const jobSchema = Joi.object({
         name: Joi.string().min(2).max(50).required().regex(/^[A-Za-z ]+$/),
         contactInfo: Joi.string().required(),
     }),
+    reqirements: Joi.string(),
     expiration: Joi.date().greater('now').required(),
 });
