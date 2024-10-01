@@ -21,10 +21,36 @@ The setup here is for your convenience. If you'd like to reach for different tec
 ### Running the build
 
 1. Navigate to the root directory.
-2. Run `docker-compose up -d`
+2. Run `docker-compose up -d` if no changes are reflected run `docker-compose up --build`
 3. Visit the frontend at `http://localhost:8080/`
 4. Visit the backend at `http://localhost:3001/`. `http://localhost:3001/api/jobs` demonstrates a working return of some prestored jobs.
-5. A Swagger documented has been included for your convience at `http://localhost:0214/`
+5. A Swagger document has been included for your convience at `http://localhost:2140/`. It's ready with api information, examples, and since it's also docker hosted, you can directly make backend calls theres.
+
+### TODO - If time permits, some pertinent things to consider
+0. NX integration to share models and components between applications
+1. A static database so data can continue to persist and regressions can be created to interact with the data
+2. Optimized queries and bid/job storage
+3. Cleaner validations and more data provided in the front end for the end user
+4. Deployed remote environment for end to end integration tests
+5. Cypress-like testing for UI
+
+### Application Technical Decisions
+Technology provided was the React - Express - Sqlite stack
+React - Application was designed as a single page application with small amounts of routing. The application itself is basic in nature and doesn't require a large ecosystem outside of the SPA. 
+    Material UI was used for a component library as it's consistent, clean, and easy to use.
+    Jest was used on the front end to test as it's an expandable library that meets basic needs. Cypress is prefered in the future since it can better simulate a user. 
+    JOI was carried over from the back end for validations.
+Express - Easy to spin up back end with an available integration with Reach through NX.
+    JOI was used as a validation library as it's easy to use with some built in logic.
+    SQLite3 was provided and used as it's easy to use with the DB setup.
+    Jest was once again used to test - able to mock calls and check coverage.
+Sqlite - Easy to spin up sql database and easily migratable into other relational databases.
+
+In general, as as POC this tech stack allowed a user to spin up the application easily and expand in scale. 
+React performs as well as other SPA applications and is an excellent choice for lightweight and has excellent support.
+Express in general could perform worse than something like Spring in an enterprise evironment with it missing features like multithreading and JVM optimizations.
+Sqlite is a POC type database and should generally be transitioned to a full scale relational DB for better performance.
+
 
 ---
 
