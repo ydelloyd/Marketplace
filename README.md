@@ -28,11 +28,12 @@ The setup here is for your convenience. If you'd like to reach for different tec
 
 ### TODO - If time permits, some pertinent things to consider
 0. NX integration to share models and components between applications
-1. A static database so data can continue to persist and regressions can be created to interact with the data
-2. Optimized queries and bid/job storage
-3. Cleaner validations and more data provided in the front end for the end user
-4. Deployed remote environment for end to end integration tests
-5. Cypress-like testing for UI
+1. Integration with users table with login functionality and user linking
+2. A static database so data can continue to persist and regressions can be created to interact with the data
+3. Optimized queries and bid/job storage
+4. Cleaner validations and more data provided in the front end for the end user
+5. Deployed remote environment for end to end integration tests
+6. Cypress-like testing for UI
 
 ### Application Technical Decisions
 Technology provided was the React - Express - Sqlite stack
