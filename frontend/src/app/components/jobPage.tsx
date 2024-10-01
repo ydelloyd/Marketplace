@@ -91,7 +91,7 @@ const JobCard: React.FC = () => {
               {job.title}
             </Typography>
             <Tooltip title={"Bid on this job!"}>
-              <IconButton color="secondary" aria-label="bid" size="large" onClick={handleOpen}>
+              <IconButton data-testid="bid" color="secondary" aria-label="bid" size="large" onClick={handleOpen}>
                 <CatchingPokemonIcon />
               </IconButton>
             </Tooltip>

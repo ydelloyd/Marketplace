@@ -6,7 +6,7 @@ import {
   Backdrop,
   CircularProgress
 } from "@mui/material";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import HomePage from "./components/homePage";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -46,12 +46,12 @@ export function App() {
         </Toolbar>
       </AppBar>
       <Container maxWidth={false}>
-        <BrowserRouter>
+
           <Routes>
             <Route element={<HomePage />} path="/" />
             <Route path="/job/:id" element={<JobPage />} />
           </Routes>
-        </BrowserRouter>
+
       </Container>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
@@ -62,7 +62,7 @@ export function App() {
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }}
         open={loading}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress data-testid="spinner" color="inherit" />
       </Backdrop>
     </div>
   );

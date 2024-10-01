@@ -1,15 +1,7 @@
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { Job } from "../models/jobModel";
 import { Bid } from "../models/bidModel";
-
-const baseURL = "http://localhost:3001";
-
-const apiClient = axios.create({
-  baseURL,
-  headers: {
-    "Content-Type": "application/json"
-  }
-});
+import apiClient from "../utils/apiClient";
 
 const jobService = {
   // Create a new job posting

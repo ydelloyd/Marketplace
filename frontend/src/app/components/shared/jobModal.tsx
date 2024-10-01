@@ -213,7 +213,7 @@ export const JobModal: React.FC<{ open: boolean; onClose: () => void }> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button data-testid="submit" onClick={handleSubmit} variant="contained" color="primary">
           Submit
         </Button>
       </DialogActions>
